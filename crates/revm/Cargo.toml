@@ -16,6 +16,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 [dependencies]
 # revm
 revm-interpreter = { path = "../interpreter", version = "4.0.0", default-features = false }
+revm-optimism = { path = "../optimism", version = "1.0.0", default-features = false }
 revm-precompile = { path = "../precompile", version = "6.0.0", default-features = false }
 
 # misc

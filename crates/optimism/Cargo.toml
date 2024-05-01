@@ -1,0 +1,41 @@
+[package]
+authors = ["Dragan Rakita <dragan0rakita@gmail.com>"]
+description = "revm primitives"
+edition = "2021"
+keywords = ["no_std", "ethereum", "evm", "revm", "types"]
+license = "MIT"
+name = "revm-optimism"
+repository = "https://github.com/bluealloy/revm"
+version = "1.0.0"
+readme = "../../README.md"
+
+[dependencies]
+revm-precompile = { path = "../precompile", version = "6.0.0", default-features = false }
+revm-primitives = { path = "../primitives", version = "3.1.1", default-features = false }
+
+# utility
+enumn = "0.1"
+
+# optional
+serde = { version = "1.0", default-features = false, features = [
+    "derive",
+    "rc",
+], optional = true }
+
+[features]
+default = ["std", "c-kzg", "portable"]
+std = [
+    "revm-primitives/std",
+    "serde?/std",
+]
+hashbrown = []
+serde = [
+    "dep:serde",
+    "revm-primitives/serde"
+]
+arbitrary = ["revm-primitives/arbitrary"]
+asm-keccak = ["revm-primitives/asm-keccak"]
+portable = ["revm-primitives/portable"]
+
+# See comments in `revm-precompile`
+c-kzg = ["revm-primitives/c-kzg"]

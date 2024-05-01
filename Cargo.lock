@@ -2934,6 +2934,7 @@ dependencies = [
  "indicatif",
  "reqwest 0.12.2",
  "revm-interpreter",
+ "revm-optimism",
  "revm-precompile",
  "serde",
  "serde_json",
@@ -2951,6 +2952,16 @@ dependencies = [
  "serde",
  "serde_json",
  "walkdir",
+]
+
+[[package]]
+name = "revm-optimism"
+version = "1.0.0"
+dependencies = [
+ "enumn",
+ "revm-precompile",
+ "revm-primitives",
+ "serde",
 ]
 
 [[package]]

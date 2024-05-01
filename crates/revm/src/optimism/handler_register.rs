@@ -9,7 +9,7 @@ use crate::{
     optimism,
     primitives::{
         db::Database, spec_to_generic, Account, EVMError, Env, ExecutionResult, HaltReason,
-        HashMap, InvalidTransaction, ResultAndState, Spec, SpecId, SpecId::REGOLITH, U256,
+        HashMap, InvalidTransaction, ResultAndState, U256,
     },
     Context, FrameResult,
 };
