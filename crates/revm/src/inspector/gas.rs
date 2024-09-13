@@ -193,7 +193,7 @@ mod tests {
             .with_db(BenchmarkDB::new_bytecode(bytecode.clone()))
             .with_default_ext_ctx()
             .modify_tx_env(|tx| {
-                *tx = <TestEvmWiring as primitives::EvmWiring>::Transaction::default();
+                *tx = <TestEvmWiring as primitives::ChainSpec>::Transaction::default();
 
                 tx.caller = address!("1000000000000000000000000000000000000000");
                 tx.transact_to = TxKind::Call(address!("0000000000000000000000000000000000000000"));

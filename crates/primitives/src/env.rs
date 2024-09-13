@@ -1,6 +1,6 @@
 use crate::{
     calc_blob_gasprice, AccessListItem, Account, Address, AuthorizationList, Block, Bytes,
-    EvmWiring, InvalidHeader, InvalidTransaction, Spec, SpecId, Transaction, TransactionValidation,
+    ChainSpec, InvalidHeader, InvalidTransaction, Spec, SpecId, Transaction, TransactionValidation,
     B256, MAX_BLOB_NUMBER_PER_BLOCK, MAX_CODE_SIZE, MAX_INITCODE_SIZE, U256,
     VERSIONED_HASH_VERSION_KZG,
 };
@@ -13,7 +13,7 @@ use std::vec::Vec;
 
 /// Subtype
 pub type EnvWiring<EvmWiringT> =
-    Env<<EvmWiringT as EvmWiring>::Block, <EvmWiringT as EvmWiring>::Transaction>;
+    Env<<EvmWiringT as ChainSpec>::Block, <EvmWiringT as ChainSpec>::Transaction>;
 
 #[derive(Clone, Debug, Default)]
 /// EVM environment configuration.

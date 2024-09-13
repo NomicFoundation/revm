@@ -189,7 +189,7 @@ mod test {
         };
 
         let mut handler = EvmHandler::<'_, TestEvmWiring>::mainnet_with_spec(
-            <TestEvmWiring as primitives::EvmWiring>::Hardfork::default(),
+            <TestEvmWiring as primitives::ChainSpec>::Hardfork::default(),
         );
         let test = Rc::new(RefCell::new(0));
 

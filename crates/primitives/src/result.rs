@@ -1,22 +1,18 @@
 use crate::{
-    db::Database, eip7702::authorization_list::InvalidAuthorization, Address, Bytes, EvmState,
-    EvmWiring, HaltReasonTrait, Log, TransactionValidation, U256,
+    db::Database, eip7702::authorization_list::InvalidAuthorization, Address, Bytes, ChainSpec,
+    EvmState, EvmWiring, HaltReasonTrait, Log, TransactionValidation, U256,
 };
 use core::fmt::{self, Debug};
 use std::{boxed::Box, string::String, vec::Vec};
 
 /// Result of EVM execution.
 pub type EVMResult<EvmWiringT> =
-    EVMResultGeneric<ResultAndState<<EvmWiringT as EvmWiring>::HaltReason>, EvmWiringT>;
+    EVMResultGeneric<ResultAndState<<EvmWiringT as ChainSpec>::HaltReason>, EvmWiringT>;
 
 /// Generic result of EVM execution. Used to represent error and generic output.
-pub type EVMResultGeneric<T, EvmWiringT> = core::result::Result<T, EVMErrorForChain<EvmWiringT>>;
+pub type EVMResultGeneric<T, EvmWiringT> = core::result::Result<T, EVMErrorWiring<EvmWiringT>>;
 
 /// EVM error type for a specific chain.
-pub type EVMErrorForChain<EvmWiringT> = EVMError<
-    <<EvmWiringT as EvmWiring>::Database as Database>::Error,
-    <<EvmWiringT as EvmWiring>::Transaction as TransactionValidation>::ValidationError,
->;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -146,7 +142,7 @@ impl Output {
 
 pub type EVMErrorWiring<EvmWiringT> = EVMError<
     <<EvmWiringT as EvmWiring>::Database as Database>::Error,
-    <<EvmWiringT as EvmWiring>::Transaction as TransactionValidation>::ValidationError,
+    <<EvmWiringT as ChainSpec>::Transaction as TransactionValidation>::ValidationError,
 >;
 
 /// Main EVM error.

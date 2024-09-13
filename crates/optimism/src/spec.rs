@@ -5,23 +5,30 @@ use core::marker::PhantomData;
 use revm::{
     handler::register::HandleRegisters,
     precompile::PrecompileSpecId,
-    primitives::{db::Database, BlockEnv, EvmWiring, Spec, SpecId},
+    primitives::{db::Database, BlockEnv, ChainSpec, EvmWiring, Spec, SpecId},
     EvmHandler,
 };
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct OptimismChainSpec;
+
+impl ChainSpec for OptimismChainSpec {
+    type Block = BlockEnv;
+    type ChainContext = Context;
+    type Transaction = TxEnv;
+    type Hardfork = OptimismSpecId;
+    type HaltReason = OptimismHaltReason;
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct OptimismEvmWiring<DB: Database, EXT> {
-    _phantom: PhantomData<(DB, EXT)>,
+    phantom: PhantomData<(DB, EXT)>,
 }
 
 impl<DB: Database, EXT> EvmWiring for OptimismEvmWiring<DB, EXT> {
-    type Block = BlockEnv;
+    type ChainSpec = OptimismChainSpec;
     type Database = DB;
-    type ChainContext = Context;
     type ExternalContext = EXT;
-    type Hardfork = OptimismSpecId;
-    type HaltReason = OptimismHaltReason;
-    type Transaction = TxEnv;
 }
 
 impl<DB: Database, EXT> revm::EvmWiring for OptimismEvmWiring<DB, EXT> {
