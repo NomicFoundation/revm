@@ -13,6 +13,10 @@ pub type EVMResult<EvmWiringT> =
 pub type EVMResultGeneric<T, EvmWiringT> = core::result::Result<T, EVMErrorWiring<EvmWiringT>>;
 
 /// EVM error type for a specific chain.
+pub type EVMErrorForChain<ChainSpecT, DatabaseErrorT> = EVMError<
+    DatabaseErrorT,
+    <<ChainSpecT as ChainSpec>::Transaction as TransactionValidation>::ValidationError,
+>;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
