@@ -1,3 +1,4 @@
+use cfg_if::cfg_if;
 use core::fmt::Debug;
 use primitives::{Address, Bytes, TxKind, B256, GAS_PER_BLOB, U256};
 use specification::{eip2930, eip7702};
@@ -67,6 +68,13 @@ pub trait Transaction {
 }
 
 pub trait TransactionValidation {
-    /// An error that occurs when validating a transaction.
-    type ValidationError: Debug + core::error::Error;
+    cfg_if! {
+        if #[cfg(feature = "std")] {
+            /// An error that occurs when validating a transaction.
+            type ValidationError: Debug + std::error::Error;
+        } else {
+            /// An error that occurs when validating a transaction.
+            type ValidationError: Debug;
+        }
+    }
 }

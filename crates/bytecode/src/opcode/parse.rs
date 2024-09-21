@@ -12,7 +12,8 @@ impl fmt::Display for OpCodeError {
     }
 }
 
-impl core::error::Error for OpCodeError {}
+#[cfg(feature = "std")]
+impl std::error::Error for OpCodeError {}
 
 impl core::str::FromStr for OpCode {
     type Err = OpCodeError;

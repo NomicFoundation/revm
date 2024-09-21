@@ -58,7 +58,8 @@ impl Display for OptimismInvalidTransaction {
     }
 }
 
-impl core::error::Error for OptimismInvalidTransaction {}
+#[cfg(feature = "std")]
+impl std::error::Error for OptimismInvalidTransaction {}
 
 impl From<InvalidTransaction> for OptimismInvalidTransaction {
     fn from(value: InvalidTransaction) -> Self {
