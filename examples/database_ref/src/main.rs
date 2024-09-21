@@ -1,7 +1,6 @@
 //! Optimism-specific constants, types, and helpers.
 #![cfg_attr(not(test), warn(unused_crate_dependencies))]
 
-use core::error::Error;
 use core::fmt::Debug;
 use database::CacheDB;
 use inspector::{
@@ -17,6 +16,7 @@ use revm::{
     },
     DatabaseCommit, DatabaseRef, Evm,
 };
+use std::error::Error;
 
 trait DatabaseRefDebugError: DatabaseRef<Error = Self::DBError> {
     type DBError: std::fmt::Debug + Error + Send + Sync + 'static;

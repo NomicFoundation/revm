@@ -312,7 +312,8 @@ impl From<InvalidAuthorization> for InvalidTransaction {
     }
 }
 
-impl core::error::Error for InvalidTransaction {}
+#[cfg(feature = "std")]
+impl std::error::Error for InvalidTransaction {}
 
 impl fmt::Display for InvalidTransaction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -388,7 +389,8 @@ pub enum InvalidHeader {
     ExcessBlobGasNotSet,
 }
 
-impl core::error::Error for InvalidHeader {}
+#[cfg(feature = "std")]
+impl std::error::Error for InvalidHeader {}
 
 impl fmt::Display for InvalidHeader {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
