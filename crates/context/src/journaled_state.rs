@@ -73,6 +73,10 @@ impl<DB: Database> Journal for JournaledState<DB> {
         &mut self.database
     }
 
+    fn logs(&self) -> &[Log] {
+        &self.logs
+    }
+
     fn state(&self) -> &EvmState {
         &self.state
     }
