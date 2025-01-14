@@ -2,7 +2,7 @@ use core::ops::{Deref, DerefMut};
 use database_interface::{Database, DatabaseGetter};
 use primitives::{Address, Bytes, HashSet, Log, B256, U256};
 use specification::hardfork::SpecId;
-use state::{Account, Bytecode};
+use state::{Account, Bytecode, EvmState};
 use std::boxed::Box;
 
 use crate::host::{SStoreResult, SelfDestructResult};
@@ -21,6 +21,9 @@ pub trait Journal {
 
     /// Returns the mutable database.
     fn db(&mut self) -> &mut Self::Database;
+
+    /// Returns the current state.
+    fn state(&self) -> &EvmState;
 
     /// Returns the storage value from Journal state.
     ///

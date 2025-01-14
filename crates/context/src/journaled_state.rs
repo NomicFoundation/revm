@@ -76,6 +76,10 @@ impl<DB: Database> Journal for JournaledState<DB> {
         &mut self.database
     }
 
+    fn state(&self) -> &EvmState {
+        &self.state
+    }
+
     fn sload(
         &mut self,
         address: Address,
