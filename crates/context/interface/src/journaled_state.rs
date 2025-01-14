@@ -22,6 +22,9 @@ pub trait Journal {
     /// Returns the mutable database.
     fn db(&mut self) -> &mut Self::Database;
 
+    /// Returns the emitted logs.
+    fn logs(&self) -> &[Log];
+
     /// Returns the current state.
     fn state(&self) -> &EvmState;
 
