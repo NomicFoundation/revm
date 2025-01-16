@@ -58,6 +58,7 @@ pub struct JournaledState<DB> {
 
 impl<DB: Database> Journal for JournaledState<DB> {
     type Database = DB;
+    type Entry = JournalEntry;
     // TODO : Make a struck here.
     type FinalOutput = (EvmState, Vec<Log>);
 
@@ -71,6 +72,10 @@ impl<DB: Database> Journal for JournaledState<DB> {
 
     fn db(&mut self) -> &mut Self::Database {
         &mut self.database
+    }
+
+    fn entries(&self) -> &[Vec<Self::Entry>] {
+        &self.journal
     }
 
     fn logs(&self) -> &[Log] {
