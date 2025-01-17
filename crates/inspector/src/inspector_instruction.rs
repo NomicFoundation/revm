@@ -6,8 +6,7 @@ use revm::{
         instructions::host::{log, selfdestruct},
         interpreter::InstructionProvider,
         interpreter_types::LoopControl,
-        table::{self, CustomInstruction},
-        Host, Instruction, InstructionResult, Interpreter, InterpreterTypes,
+        table, Host, Instruction, InstructionResult, Interpreter, InterpreterTypes,
     },
     JournalEntry,
 };
@@ -40,6 +39,7 @@ where
 {
     type WIRE = WIRE;
     type Host = HOST;
+    type Instruction = InspectorInstruction<WIRE, HOST>;
 
     fn new(_context: &mut Self::Host) -> Self {
         let main_table = table::make_instruction_table::<WIRE, HOST>();
@@ -130,7 +130,7 @@ where
         }
     }
 
-    fn table(&mut self) -> &[impl CustomInstruction<Wire = Self::WIRE, Host = Self::Host>; 256] {
+    fn table(&mut self) -> &[Self::Instruction; 256] {
         self.instruction_table.as_ref()
     }
 }

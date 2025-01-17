@@ -91,10 +91,11 @@ impl<EXT, MG: MemoryGetter> InterpreterTypes for EthInterpreter<EXT, MG> {
 pub trait InstructionProvider: Clone {
     type WIRE: InterpreterTypes;
     type Host;
+    type Instruction: CustomInstruction<Wire = Self::WIRE, Host = Self::Host>;
 
     fn new(context: &mut Self::Host) -> Self;
 
-    fn table(&mut self) -> &[impl CustomInstruction<Wire = Self::WIRE, Host = Self::Host>; 256];
+    fn table(&mut self) -> &[Self::Instruction; 256];
 }
 
 pub struct EthInstructionProvider<WIRE: InterpreterTypes, HOST> {
@@ -119,6 +120,7 @@ where
 {
     type WIRE = WIRE;
     type Host = HOST;
+    type Instruction = Instruction<WIRE, HOST>;
 
     fn new(_context: &mut Self::Host) -> Self {
         Self {
@@ -126,9 +128,8 @@ where
         }
     }
 
-    // TODO : Make impl a associate type. With this associate type we can implement.
-    // InspectorInstructionProvider over generic type.
-    fn table(&mut self) -> &[impl CustomInstruction<Wire = Self::WIRE, Host = Self::Host>; 256] {
+    // TODO : implement InspectorInstructionProvider over generic type.
+    fn table(&mut self) -> &[Self::Instruction; 256] {
         self.instruction_table.as_ref()
     }
 }
