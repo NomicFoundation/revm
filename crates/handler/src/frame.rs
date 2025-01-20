@@ -459,13 +459,13 @@ where
     PRECOMPILE: PrecompileProvider<Context = CTX, Error = ERROR, Output = InterpreterResult>,
     INSTRUCTION: InstructionProvider<WIRE = EthInterpreter<()>, Host = CTX>,
 {
-    type Context = CTX;
+    type Context<'context> = CTX;
     type Error = ERROR;
     type FrameInit = FrameInput;
     type FrameResult = FrameResult;
 
     fn init_first(
-        context: &mut Self::Context,
+        context: &mut Self::Context<'_>,
         frame_input: Self::FrameInit,
     ) -> Result<FrameOrResultGen<Self, Self::FrameResult>, Self::Error> {
         let memory = Rc::new(RefCell::new(SharedMemory::new()));
@@ -482,7 +482,7 @@ where
     }
 
     fn final_return(
-        _context: &mut Self::Context,
+        _context: &mut Self::Context<'_>,
         _result: &mut Self::FrameResult,
     ) -> Result<(), Self::Error> {
         Ok(())
@@ -506,7 +506,7 @@ where
 
     fn run(
         &mut self,
-        context: &mut Self::Context,
+        context: &mut Self::Context<'_>,
     ) -> Result<FrameOrResultGen<Self::FrameInit, Self::FrameResult>, Self::Error> {
         let spec = context.cfg().spec().into();
 
@@ -574,7 +574,7 @@ where
 
     fn return_result(
         &mut self,
-        context: &mut Self::Context,
+        context: &mut Self::Context<'_>,
         result: Self::FrameResult,
     ) -> Result<(), Self::Error> {
         self.memory.borrow_mut().free_context();

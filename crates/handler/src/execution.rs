@@ -33,8 +33,12 @@ impl<CTX, ERROR, FRAME> ExecutionHandler for EthExecution<CTX, ERROR, FRAME>
 where
     CTX: EthExecutionContext<ERROR>,
     ERROR: EthExecutionError<CTX>,
-    FRAME:
-        FrameTrait<Context = CTX, Error = ERROR, FrameInit = FrameInput, FrameResult = FrameResult>,
+    FRAME: for<'context> FrameTrait<
+        Context<'context> = CTX,
+        Error = ERROR,
+        FrameInit = FrameInput,
+        FrameResult = FrameResult,
+    >,
 {
     type Context = CTX;
     type Error = ERROR;

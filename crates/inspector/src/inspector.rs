@@ -256,7 +256,7 @@ where
     ERROR: From<JournalDBError<CTX>> + From<PrecompileErrors>,
     PRECOMPILE: PrecompileProvider<Context = CTX, Error = ERROR, Output = InterpreterResult>,
 {
-    type Context = CTX;
+    type Context<'context> = CTX;
     type Error = ERROR;
     type FrameInit = FrameInput;
     type FrameResult = FrameResult;
@@ -284,7 +284,7 @@ where
     }
 
     fn final_return(
-        context: &mut Self::Context,
+        context: &mut Self::Context<'_>,
         result: &mut Self::FrameResult,
     ) -> Result<(), Self::Error> {
         context.frame_end(result);

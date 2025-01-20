@@ -5,7 +5,7 @@ pub use std::{vec, vec::Vec};
 pub trait ExecutionHandler {
     type Context;
     type Error;
-    type Frame: Frame<Context = Self::Context, Error = Self::Error>;
+    type Frame: for<'context> Frame<Context<'context> = Self::Context, Error = Self::Error>;
     type ExecResult;
 
     /// Execute call.

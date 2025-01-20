@@ -193,7 +193,12 @@ where
     ERROR: EthExecutionError<CTX> + EthFrameError<CTX>,
     <CTX as CfgGetter>::Cfg: Cfg<Spec = OpSpec>,
     //<CTX as TransactionGetter>::Transaction: Transaction<TransactionType = OpTransactionType>,
-    FRAME: Frame<Context = CTX, Error = ERROR, FrameInit = FrameInput, FrameResult = FrameResult>,
+    FRAME: for<'context> Frame<
+        Context<'context> = CTX,
+        Error = ERROR,
+        FrameInit = FrameInput,
+        FrameResult = FrameResult,
+    >,
 {
     type Context = CTX;
     type Error = ERROR;
