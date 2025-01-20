@@ -495,14 +495,14 @@ where
             >,
         >,
 {
-    type Context = CTX;
+    type Context<'context> = CTX;
     type Error = ERROR;
     type FrameInit = FrameInput;
     type FrameContext = FRAMECTX;
     type FrameResult = FrameResult;
 
     fn init_first(
-        context: &mut Self::Context,
+        context: &mut Self::Context<'_>,
         frame_context: &mut Self::FrameContext,
         frame_input: Self::FrameInit,
     ) -> Result<ItemOrResult<Self, Self::FrameResult>, Self::Error> {
@@ -519,7 +519,7 @@ where
 
     fn init(
         &self,
-        context: &mut CTX,
+        context: &mut Self::Context<'_>,
         frame_context: &mut Self::FrameContext,
         frame_init: Self::FrameInit,
     ) -> Result<ItemOrResult<Self, Self::FrameResult>, Self::Error> {
@@ -535,7 +535,7 @@ where
 
     fn run(
         &mut self,
-        context: &mut Self::Context,
+        context: &mut Self::Context<'_>,
         frame_context: &mut Self::FrameContext,
     ) -> Result<FrameInitOrResult<Self>, Self::Error> {
         let spec = context.cfg().spec().into();
@@ -602,7 +602,7 @@ where
 
     fn return_result(
         &mut self,
-        context: &mut Self::Context,
+        context: &mut Self::Context<'_>,
         _frame_context: &mut Self::FrameContext,
         result: Self::FrameResult,
     ) -> Result<(), Self::Error> {

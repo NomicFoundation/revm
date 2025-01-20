@@ -23,8 +23,8 @@ pub trait EthHandler {
     type Instructions: InstructionExecutor<CTX = Self::Context>;
     // TODO `FrameResult` should be a generic trait.
     // TODO `FrameInit` should be a generic.
-    type Frame: Frame<
-        Context = Self::Context,
+    type Frame: for<'context> Frame<
+        Context<'context> = Self::Context,
         Error = Self::Error,
         FrameResult = FrameResult,
         FrameInit = FrameInput,

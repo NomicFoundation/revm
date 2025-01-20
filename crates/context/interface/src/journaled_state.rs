@@ -2,14 +2,13 @@ use core::ops::{Deref, DerefMut};
 use database_interface::{Database, DatabaseGetter};
 use primitives::{Address, Bytes, HashSet, Log, B256, U256};
 use specification::hardfork::SpecId;
-use state::{Account, Bytecode, EvmState};
-use std::{boxed::Box, vec::Vec};
+use state::{Account, Bytecode};
+use std::boxed::Box;
 
 use crate::host::{SStoreResult, SelfDestructResult};
 
 pub trait Journal {
     type Database: Database;
-    type Entry;
     type FinalOutput;
 
     /// Creates new Journaled state.
@@ -22,15 +21,6 @@ pub trait Journal {
 
     /// Returns the mutable database.
     fn db(&mut self) -> &mut Self::Database;
-
-    /// Returns the journal entries of state changes, one for each frame.
-    fn entries(&self) -> &[Vec<Self::Entry>];
-
-    /// Returns the emitted logs.
-    fn logs(&self) -> &[Log];
-
-    /// Returns the current state.
-    fn state(&self) -> &EvmState;
 
     /// Returns the storage value from Journal state.
     ///

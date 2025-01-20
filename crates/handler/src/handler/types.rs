@@ -30,8 +30,8 @@ where
     INSTRUCTIONS: InstructionExecutor<InterpreterTypes = EthInterpreter, CTX = CTX>,
     // TODO `FrameResult` should be a generic trait.
     // TODO `FrameInit` should be a generic.
-    FRAME: Frame<
-        Context = CTX,
+    FRAME: for<'context> Frame<
+        Context<'context> = CTX,
         Error = ERROR,
         FrameResult = FrameResult,
         FrameInit = FrameInput,
