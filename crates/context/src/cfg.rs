@@ -174,12 +174,12 @@ impl<SPEC: Into<SpecId> + Copy> Cfg for CfgEnv<SPEC> {
     }
 }
 
-impl Default for CfgEnv {
+impl<SPEC: Default + Into<SpecId>> Default for CfgEnv<SPEC> {
     fn default() -> Self {
         Self {
             chain_id: 1,
             limit_contract_code_size: None,
-            spec: SpecId::PRAGUE,
+            spec: SPEC::default(),
             disable_nonce_check: false,
             blob_target_and_max_count: vec![(SpecId::CANCUN, 3, 6), (SpecId::PRAGUE, 6, 9)],
             #[cfg(feature = "memory_limit")]
@@ -204,7 +204,7 @@ mod test {
 
     #[test]
     fn blob_max_and_target_count() {
-        let cfg = CfgEnv::default();
+        let cfg = CfgEnv::<SpecId>::default();
         assert_eq!(cfg.blob_max_count(SpecId::BERLIN), (6));
         assert_eq!(cfg.blob_max_count(SpecId::CANCUN), (6));
         assert_eq!(cfg.blob_max_count(SpecId::PRAGUE), (9));
