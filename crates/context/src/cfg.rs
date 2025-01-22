@@ -208,7 +208,7 @@ impl<SPEC: Default> Default for CfgEnv<SPEC> {
         Self {
             chain_id: 1,
             limit_contract_code_size: None,
-            spec: Default::default(),
+            spec: SPEC::default(),
             disable_nonce_check: false,
             blob_target_and_max_count: vec![(SpecId::CANCUN, 3, 6), (SpecId::PRAGUE, 6, 9)],
             #[cfg(feature = "memory_limit")]
