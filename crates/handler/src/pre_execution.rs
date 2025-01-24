@@ -10,12 +10,13 @@ use context_interface::{
     Block, BlockGetter, Cfg, CfgGetter, Database, DatabaseGetter, JournalDBError, JournalGetter,
     PerformantContextAccess, TransactionGetter,
 };
+use derive_where::derive_where;
 use handler_interface::PreExecutionHandler;
 use primitives::{Address, BLOCKHASH_STORAGE_ADDRESS, KECCAK_EMPTY, U256};
 use specification::{eip7702, hardfork::SpecId};
 use std::{boxed::Box, vec::Vec};
 
-#[derive(Default)]
+#[derive_where(Default)]
 pub struct EthPreExecution<CTX, ERROR> {
     pub _phantom: core::marker::PhantomData<(CTX, ERROR)>,
 }

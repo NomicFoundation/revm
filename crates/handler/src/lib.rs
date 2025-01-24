@@ -17,6 +17,7 @@ mod validation;
 
 // Public exports
 
+use derive_where::derive_where;
 pub use execution::{EthExecution, EthExecutionContext, EthExecutionError};
 pub use frame::{return_create, return_eofcreate, EthFrame, EthFrameContext, EthFrameError};
 pub use frame_data::{FrameData, FrameResult};
@@ -49,7 +50,7 @@ use handler_interface::{
 };
 use interpreter::Host;
 
-#[derive(Default)]
+#[derive_where(Default; VAL, PREEXEC, EXEC, POSTEXEC)]
 pub struct EthHandler<
     CTX,
     ERROR,
@@ -63,18 +64,6 @@ pub struct EthHandler<
     pub execution: EXEC,
     pub post_execution: POSTEXEC,
     _phantom: core::marker::PhantomData<fn() -> (CTX, ERROR)>,
-}
-
-impl<CTX, ERROR> Default for EthHandler<CTX, ERROR> {
-    fn default() -> Self {
-        Self {
-            validation: EthValidation::new(),
-            pre_execution: EthPreExecution::new(),
-            execution: EthExecution::new(),
-            post_execution: EthPostExecution::new(),
-            _phantom: core::marker::PhantomData,
-        }
-    }
 }
 
 impl<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>

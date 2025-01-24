@@ -5,6 +5,7 @@ use context_interface::{
     Block, BlockGetter, Cfg, CfgGetter, JournalDBError, JournalGetter, TransactionGetter,
 };
 use core::cmp::{self, Ordering};
+use derive_where::derive_where;
 use handler_interface::{InitialAndFloorGas, ValidationHandler};
 use interpreter::gas::{self};
 use primitives::{B256, U256};
@@ -12,16 +13,9 @@ use specification::{eip4844, hardfork::SpecId};
 use state::Account;
 use std::boxed::Box;
 
+#[derive_where(Default)]
 pub struct EthValidation<CTX, ERROR> {
     pub _phantom: core::marker::PhantomData<fn() -> (CTX, ERROR)>,
-}
-
-impl<CTX, ERROR> Default for EthValidation<CTX, ERROR> {
-    fn default() -> Self {
-        Self {
-            _phantom: core::marker::PhantomData,
-        }
-    }
 }
 
 impl<CTX, ERROR> EthValidation<CTX, ERROR> {

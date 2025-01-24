@@ -4,6 +4,7 @@ use context_interface::{
     Block, BlockGetter, Cfg, CfgGetter, ErrorGetter, JournalDBError, JournalGetter, Transaction,
     TransactionGetter,
 };
+use derive_where::derive_where;
 use handler_interface::PostExecutionHandler;
 use interpreter::SuccessOrHalt;
 use primitives::{Log, U256};
@@ -13,7 +14,7 @@ use std::{boxed::Box, vec::Vec};
 
 use super::frame_data::FrameResult;
 
-#[derive(Default)]
+#[derive_where(Default)]
 pub struct EthPostExecution<CTX, ERROR, HALTREASON> {
     pub _phantom: core::marker::PhantomData<(CTX, ERROR, HALTREASON)>,
 }

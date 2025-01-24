@@ -32,6 +32,9 @@ specification.workspace = true
 bytecode.workspace = true
 handler-interface.workspace = true
 
+# misc
+derive-where.workspace = true
+
 # Optional
 serde = { version = "1.0", default-features = false, features = [
     "derive",

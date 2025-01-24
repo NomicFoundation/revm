@@ -4,6 +4,7 @@ use context_interface::{
     result::InvalidTransaction, BlockGetter, Cfg, CfgGetter, ErrorGetter, JournalDBError,
     JournalGetter, Transaction, TransactionGetter,
 };
+use derive_where::derive_where;
 use handler_interface::{util::FrameOrFrameResult, ExecutionHandler, Frame as FrameTrait};
 use interpreter::{
     interpreter::{EthInstructionProvider, EthInterpreter},
@@ -14,7 +15,7 @@ use primitives::TxKind;
 use specification::hardfork::SpecId;
 use std::boxed::Box;
 
-#[derive(Default)]
+#[derive_where(Default)]
 pub struct EthExecution<
     CTX,
     ERROR,
