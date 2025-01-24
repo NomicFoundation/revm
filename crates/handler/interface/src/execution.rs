@@ -2,10 +2,10 @@ use crate::util::FrameOrFrameResult;
 pub use crate::{Frame, FrameOrResultGen};
 pub use std::{vec, vec::Vec};
 
-pub trait ExecutionHandler {
-    type Context;
+pub trait ExecutionHandler<'context> {
+    type Context: 'context;
     type Error;
-    type Frame: for<'context> Frame<Context<'context> = Self::Context, Error = Self::Error>;
+    type Frame: Frame<Context<'context> = Self::Context, Error = Self::Error>;
     type ExecResult;
 
     /// Execute call.
@@ -27,7 +27,7 @@ pub trait ExecutionHandler {
         context: &mut Self::Context,
         frame: Self::Frame,
     ) -> Result<Self::ExecResult, Self::Error> {
-        let mut frame_stack: Vec<<Self as ExecutionHandler>::Frame> = vec![frame];
+        let mut frame_stack: Vec<Self::Frame> = vec![frame];
         loop {
             let frame = frame_stack.last_mut().unwrap();
             let call_or_result = frame.run(context)?;

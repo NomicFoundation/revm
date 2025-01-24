@@ -19,7 +19,8 @@ pub type OpError<DB> = EVMError<<DB as Database>::Error, InvalidTransaction>;
 pub type OpContext<DB> = Context<BlockEnv, OpTransaction<TxEnv>, CfgEnv<OpSpec>, DB, L1BlockInfo>;
 
 /// Optimism EVM type
-pub type OpEvm<DB> = Evm<OpError<DB>, OpContext<DB>, OpHandler<OpContext<DB>, OpError<DB>>>;
+pub type OpEvm<'context, DB> =
+    Evm<'context, OpError<DB>, OpContext<DB>, OpHandler<'context, OpContext<DB>, OpError<DB>>>;
 
 pub type InspCtxType<INSP, DB> = InspectorContext<
     INSP,
@@ -27,15 +28,18 @@ pub type InspCtxType<INSP, DB> = InspectorContext<
     Context<BlockEnv, TxEnv, CfgEnv<OpSpec>, DB, JournaledState<DB>, L1BlockInfo>,
 >;
 
-pub type InspectorOpEvm<DB, INSP> = Evm<
+pub type InspectorOpEvm<'context, DB, INSP> = Evm<
+    'context,
     OpError<DB>,
     InspCtxType<INSP, DB>,
     OpHandler<
+        'context,
         InspCtxType<INSP, DB>,
         OpError<DB>,
         OpValidation<InspCtxType<INSP, DB>, OpError<DB>>,
         OpPreExecution<InspCtxType<INSP, DB>, OpError<DB>>,
         OpExecution<
+            'context,
             InspCtxType<INSP, DB>,
             OpError<DB>,
             InspectorEthFrame<

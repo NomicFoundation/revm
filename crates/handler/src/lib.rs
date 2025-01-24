@@ -52,22 +52,23 @@ use interpreter::Host;
 
 #[derive_where(Default; VAL, PREEXEC, EXEC, POSTEXEC)]
 pub struct EthHandler<
+    'context,
     CTX,
     ERROR,
     VAL = EthValidation<CTX, ERROR>,
     PREEXEC = EthPreExecution<CTX, ERROR>,
-    EXEC = EthExecution<CTX, ERROR>,
+    EXEC = EthExecution<'context, CTX, ERROR>,
     POSTEXEC = EthPostExecution<CTX, ERROR, HaltReason>,
 > {
     pub validation: VAL,
     pub pre_execution: PREEXEC,
     pub execution: EXEC,
     pub post_execution: POSTEXEC,
-    _phantom: core::marker::PhantomData<fn() -> (CTX, ERROR)>,
+    _phantom: core::marker::PhantomData<fn() -> &'context (CTX, ERROR)>,
 }
 
-impl<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
-    EthHandler<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
+impl<'context, CTX: 'context, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
+    EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
 {
     pub fn new(
         validation: VAL,
@@ -85,10 +86,11 @@ impl<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
     }
 }
 
-impl<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC> Handler
-    for EthHandler<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
+impl<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC> Handler<'context>
+    for EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
 where
-    CTX: TransactionGetter
+    CTX: 'context
+        + TransactionGetter
         + BlockGetter
         + JournalGetter
         + CfgGetter
@@ -101,7 +103,7 @@ where
         + From<PrecompileErrors>,
     VAL: ValidationHandler,
     PREEXEC: PreExecutionHandler,
-    EXEC: ExecutionHandler,
+    EXEC: ExecutionHandler<'context>,
     POSTEXEC: PostExecutionHandler,
 {
     type Validation = VAL;

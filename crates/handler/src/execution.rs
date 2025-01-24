@@ -17,6 +17,7 @@ use std::boxed::Box;
 
 #[derive_where(Default)]
 pub struct EthExecution<
+    'context,
     CTX,
     ERROR,
     FRAME = EthFrame<
@@ -27,14 +28,15 @@ pub struct EthExecution<
         EthInstructionProvider<EthInterpreter<()>, CTX>,
     >,
 > {
-    _phantom: core::marker::PhantomData<(CTX, FRAME, ERROR)>,
+    _phantom: core::marker::PhantomData<&'context (CTX, FRAME, ERROR)>,
 }
 
-impl<CTX, ERROR, FRAME> ExecutionHandler for EthExecution<CTX, ERROR, FRAME>
+impl<'context, CTX, ERROR, FRAME> ExecutionHandler<'context>
+    for EthExecution<'context, CTX, ERROR, FRAME>
 where
-    CTX: EthExecutionContext<ERROR>,
+    CTX: 'context + EthExecutionContext<ERROR>,
     ERROR: EthExecutionError<CTX>,
-    FRAME: for<'context> FrameTrait<
+    FRAME: FrameTrait<
         Context<'context> = CTX,
         Error = ERROR,
         FrameInit = FrameInput,
@@ -117,7 +119,7 @@ where
     }
 }
 
-impl<CTX, ERROR, FRAME> EthExecution<CTX, ERROR, FRAME> {
+impl<'context, CTX: 'context, ERROR, FRAME> EthExecution<'context, CTX, ERROR, FRAME> {
     pub fn new() -> Self {
         Self {
             _phantom: core::marker::PhantomData,

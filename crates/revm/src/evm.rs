@@ -25,13 +25,13 @@ use state::EvmState;
 use std::vec::Vec;
 
 /// Main EVM structure
-pub struct Evm<ERROR, CTX = Context, HANDLER = EthHandler<CTX, ERROR>> {
+pub struct Evm<'context, ERROR, CTX = Context, HANDLER = EthHandler<'context, CTX, ERROR>> {
     pub context: CTX,
     pub handler: HANDLER,
-    pub _error: core::marker::PhantomData<fn() -> ERROR>,
+    pub _error: core::marker::PhantomData<fn() -> &'context ERROR>,
 }
 
-impl<ERROR, CTX, HANDLER> Evm<ERROR, CTX, HANDLER> {
+impl<ERROR, CTX, HANDLER> Evm<'_, ERROR, CTX, HANDLER> {
     pub fn new(context: CTX, handler: HANDLER) -> Self {
         Self {
             context,
@@ -41,10 +41,11 @@ impl<ERROR, CTX, HANDLER> Evm<ERROR, CTX, HANDLER> {
     }
 }
 
-impl<ERROR, CTX, VAL, PREEXEC, EXEC, POSTEXEC, HALT> EvmCommit
-    for Evm<ERROR, CTX, EthHandler<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>>
+impl<'context, ERROR, CTX, VAL, PREEXEC, EXEC, POSTEXEC, HALT> EvmCommit
+    for Evm<'context, ERROR, CTX, EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>>
 where
-    CTX: TransactionSetter
+    CTX: 'context
+        + TransactionSetter
         + BlockSetter
         + JournalGetter
         + CfgGetter
@@ -55,7 +56,8 @@ where
                 FinalOutput = (EvmState, Vec<Log>),
                 Database = <CTX as DatabaseGetter>::Database,
             >,
-        > + Host
+        >
+        + Host
         + PerformantContextAccess<Error = <<CTX as DatabaseGetter>::Database as Database>::Error>,
     ERROR: From<InvalidTransaction>
         + From<InvalidHeader>
@@ -64,6 +66,7 @@ where
     VAL: ValidationHandler<Context = CTX, Error = ERROR>,
     PREEXEC: PreExecutionHandler<Context = CTX, Error = ERROR>,
     EXEC: ExecutionHandler<
+        'context,
         Context = CTX,
         Error = ERROR,
         ExecResult = FrameResult,
@@ -89,10 +92,11 @@ where
     }
 }
 
-impl<ERROR, CTX, VAL, PREEXEC, EXEC, POSTEXEC> EvmExec
-    for Evm<ERROR, CTX, EthHandler<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>>
+impl<'context, ERROR, CTX, VAL, PREEXEC, EXEC, POSTEXEC> EvmExec
+    for Evm<'context, ERROR, CTX, EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>>
 where
-    CTX: TransactionSetter
+    CTX: 'context
+        + TransactionSetter
         + BlockSetter
         + JournalGetter
         + CfgGetter
@@ -103,7 +107,8 @@ where
                 FinalOutput = (EvmState, Vec<Log>),
                 Database = <CTX as DatabaseGetter>::Database,
             >,
-        > + Host
+        >
+        + Host
         + PerformantContextAccess<Error = <<CTX as DatabaseGetter>::Database as Database>::Error>,
     ERROR: From<InvalidTransaction>
         + From<InvalidHeader>
@@ -112,6 +117,7 @@ where
     VAL: ValidationHandler<Context = CTX, Error = ERROR>,
     PREEXEC: PreExecutionHandler<Context = CTX, Error = ERROR>,
     EXEC: ExecutionHandler<
+        'context,
         Context = CTX,
         Error = ERROR,
         ExecResult = FrameResult,
@@ -146,12 +152,14 @@ pub type EthContext<DB, BLOCK = BlockEnv, TX = TxEnv, CFG = CfgEnv, JOURNAL = Jo
     Context<BLOCK, TX, CFG, DB, JOURNAL, ()>;
 
 /// Mainnet EVM type.
-pub type MainEvm<DB, BLOCK, TX, CFG> = Evm<Error<DB>, EthContext<DB, BLOCK, TX, CFG>>;
+pub type MainEvm<'context, DB, BLOCK, TX, CFG> =
+    Evm<'context, Error<DB>, EthContext<DB, BLOCK, TX, CFG>>;
 
-impl<ERROR, CTX, VAL, PREEXEC, EXEC, POSTEXEC>
-    Evm<ERROR, CTX, EthHandler<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>>
+impl<'context, ERROR, CTX, VAL, PREEXEC, EXEC, POSTEXEC>
+    Evm<'context, ERROR, CTX, EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>>
 where
-    CTX: TransactionGetter
+    CTX: 'context
+        + TransactionGetter
         + BlockGetter
         + JournalGetter
         + CfgGetter
@@ -162,7 +170,8 @@ where
                 FinalOutput = (EvmState, Vec<Log>),
                 Database = <CTX as DatabaseGetter>::Database,
             >,
-        > + Host
+        >
+        + Host
         + PerformantContextAccess<Error = <<CTX as DatabaseGetter>::Database as Database>::Error>,
     ERROR: From<InvalidTransaction>
         + From<InvalidHeader>
@@ -171,6 +180,7 @@ where
     VAL: ValidationHandler<Context = CTX, Error = ERROR>,
     PREEXEC: PreExecutionHandler<Context = CTX, Error = ERROR>,
     EXEC: ExecutionHandler<
+        'context,
         Context = CTX,
         Error = ERROR,
         ExecResult = FrameResult,

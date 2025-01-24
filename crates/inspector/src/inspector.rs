@@ -329,21 +329,23 @@ where
 
 pub type InspCtxType<INSP, DB, CTX> = InspectorContext<INSP, DB, CTX>;
 
-pub type InspectorMainEvm<INSP, CTX, DB = EmptyDB> = Evm<
+pub type InspectorMainEvm<'context, INSP, CTX, DB = EmptyDB> = Evm<
+    'context,
     Error<DB>,
     InspCtxType<INSP, DB, CTX>,
     EthHandler<
+        'context,
         InspCtxType<INSP, DB, CTX>,
         Error<DB>,
         EthValidation<InspCtxType<INSP, DB, CTX>, Error<DB>>,
         EthPreExecution<InspCtxType<INSP, DB, CTX>, Error<DB>>,
-        InspectorEthExecution<InspCtxType<INSP, DB, CTX>, Error<DB>>,
+        InspectorEthExecution<'context, InspCtxType<INSP, DB, CTX>, Error<DB>>,
     >,
 >;
 
 /// Function to create Inspector Handler.
-pub fn inspector_handler<CTX: Host, ERROR, PRECOMPILE>() -> InspectorHandler<CTX, ERROR, PRECOMPILE>
-{
+pub fn inspector_handler<'context, CTX: 'context + Host, ERROR, PRECOMPILE>(
+) -> InspectorHandler<'context, CTX, ERROR, PRECOMPILE> {
     EthHandler::new(
         EthValidation::new(),
         EthPreExecution::new(),
@@ -353,14 +355,19 @@ pub fn inspector_handler<CTX: Host, ERROR, PRECOMPILE>() -> InspectorHandler<CTX
 }
 
 /// Composed type for Inspector Execution handler.
-pub type InspectorEthExecution<CTX, ERROR, PRECOMPILE = EthPrecompileProvider<CTX, ERROR>> =
-    EthExecution<CTX, ERROR, InspectorEthFrame<CTX, ERROR, PRECOMPILE>>;
+pub type InspectorEthExecution<
+    'context,
+    CTX,
+    ERROR,
+    PRECOMPILE = EthPrecompileProvider<CTX, ERROR>,
+> = EthExecution<'context, CTX, ERROR, InspectorEthFrame<CTX, ERROR, PRECOMPILE>>;
 
 /// Composed type for Inspector Handler.
-pub type InspectorHandler<CTX, ERROR, PRECOMPILE> = EthHandler<
+pub type InspectorHandler<'context, CTX, ERROR, PRECOMPILE> = EthHandler<
+    'context,
     CTX,
     ERROR,
     EthValidation<CTX, ERROR>,
     EthPreExecution<CTX, ERROR>,
-    InspectorEthExecution<CTX, ERROR, PRECOMPILE>,
+    InspectorEthExecution<'context, CTX, ERROR, PRECOMPILE>,
 >;

@@ -37,13 +37,14 @@ use revm::{
 };
 
 pub type OpHandler<
+    'context,
     CTX,
     ERROR,
     VAL = OpValidation<CTX, ERROR>,
     PREEXEC = OpPreExecution<CTX, ERROR>,
-    EXEC = OpExecution<CTX, ERROR>,
+    EXEC = OpExecution<'context, CTX, ERROR>,
     POSTEXEC = OpPostExecution<CTX, ERROR>,
-> = EthHandler<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>;
+> = EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>;
 
 pub struct OpValidation<CTX, ERROR> {
     pub eth: EthValidation<CTX, ERROR>,
@@ -174,6 +175,7 @@ where
 }
 
 pub struct OpExecution<
+    'context,
     CTX,
     ERROR,
     FRAME = EthFrame<
@@ -184,16 +186,17 @@ pub struct OpExecution<
         EthInstructionProvider<EthInterpreter<()>, CTX>,
     >,
 > {
-    pub eth: EthExecution<CTX, ERROR, FRAME>,
+    pub eth: EthExecution<'context, CTX, ERROR, FRAME>,
 }
 
-impl<CTX, ERROR, FRAME> ExecutionHandler for OpExecution<CTX, ERROR, FRAME>
+impl<'context, CTX, ERROR, FRAME> ExecutionHandler<'context>
+    for OpExecution<'context, CTX, ERROR, FRAME>
 where
-    CTX: EthExecutionContext<ERROR> + EthFrameContext + OpTxGetter,
+    CTX: 'context + EthExecutionContext<ERROR> + EthFrameContext + OpTxGetter,
     ERROR: EthExecutionError<CTX> + EthFrameError<CTX>,
     <CTX as CfgGetter>::Cfg: Cfg<Spec = OpSpec>,
     //<CTX as TransactionGetter>::Transaction: Transaction<TransactionType = OpTransactionType>,
-    FRAME: for<'context> Frame<
+    FRAME: Frame<
         Context<'context> = CTX,
         Error = ERROR,
         FrameInit = FrameInput,

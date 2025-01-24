@@ -19,16 +19,18 @@ pub type Erc20GasError<DB> = EVMError<<DB as Database>::Error, InvalidTransactio
 pub type Erc20GasContext<DB> = Context<BlockEnv, TxEnv, CfgEnv, DB>;
 
 pub type CustomHandler<
+    'context,
     CTX,
     ERROR,
     VAL = Erc20Validation<CTX, ERROR>,
     PREEXEC = Erc20PreExecution<CTX, ERROR>,
-    EXEC = EthExecution<CTX, ERROR>,
+    EXEC = EthExecution<'context, CTX, ERROR>,
     POSTEXEC = Erc20PostExecution<CTX, ERROR>,
-> = EthHandler<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>;
+> = EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>;
 
-pub type CustomEvm<DB> = Evm<
+pub type CustomEvm<'context, DB> = Evm<
+    'context,
     Erc20GasError<DB>,
     Erc20GasContext<DB>,
-    CustomHandler<Erc20GasContext<DB>, Erc20GasError<DB>>,
+    CustomHandler<'context, Erc20GasContext<DB>, Erc20GasError<DB>>,
 >;

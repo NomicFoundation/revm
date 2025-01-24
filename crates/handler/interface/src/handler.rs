@@ -1,9 +1,9 @@
 use crate::{ExecutionHandler, PostExecutionHandler, PreExecutionHandler, ValidationHandler};
 
-pub trait Handler {
+pub trait Handler<'context> {
     type Validation: ValidationHandler;
     type PreExecution: PreExecutionHandler;
-    type Execution: ExecutionHandler;
+    type Execution: ExecutionHandler<'context>;
     type PostExecution: PostExecutionHandler;
 
     fn validation(&mut self) -> &mut Self::Validation;
