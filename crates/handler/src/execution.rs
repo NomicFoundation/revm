@@ -34,7 +34,7 @@ pub struct EthExecution<
 impl<'context, CTX, ERROR, FRAME> ExecutionHandler<'context>
     for EthExecution<'context, CTX, ERROR, FRAME>
 where
-    CTX: 'context + EthExecutionContext<ERROR>,
+    CTX: EthExecutionContext<ERROR>,
     ERROR: EthExecutionError<CTX>,
     FRAME: FrameTrait<
         Context<'context> = CTX,
@@ -119,7 +119,7 @@ where
     }
 }
 
-impl<'context, CTX: 'context, ERROR, FRAME> EthExecution<'context, CTX, ERROR, FRAME> {
+impl<'context, CTX, ERROR, FRAME> EthExecution<'context, CTX, ERROR, FRAME> {
     pub fn new() -> Self {
         Self {
             _phantom: core::marker::PhantomData,

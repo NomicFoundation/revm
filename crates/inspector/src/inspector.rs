@@ -344,7 +344,7 @@ pub type InspectorMainEvm<'context, INSP, CTX, DB = EmptyDB> = Evm<
 >;
 
 /// Function to create Inspector Handler.
-pub fn inspector_handler<'context, CTX: 'context + Host, ERROR, PRECOMPILE>(
+pub fn inspector_handler<'context, CTX: Host, ERROR, PRECOMPILE>(
 ) -> InspectorHandler<'context, CTX, ERROR, PRECOMPILE> {
     EthHandler::new(
         EthValidation::new(),

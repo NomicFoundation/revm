@@ -44,8 +44,7 @@ impl<ERROR, CTX, HANDLER> Evm<'_, ERROR, CTX, HANDLER> {
 impl<'context, ERROR, CTX, VAL, PREEXEC, EXEC, POSTEXEC, HALT> EvmCommit
     for Evm<'context, ERROR, CTX, EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>>
 where
-    CTX: 'context
-        + TransactionSetter
+    CTX: TransactionSetter
         + BlockSetter
         + JournalGetter
         + CfgGetter
@@ -56,8 +55,7 @@ where
                 FinalOutput = (EvmState, Vec<Log>),
                 Database = <CTX as DatabaseGetter>::Database,
             >,
-        >
-        + Host
+        > + Host
         + PerformantContextAccess<Error = <<CTX as DatabaseGetter>::Database as Database>::Error>,
     ERROR: From<InvalidTransaction>
         + From<InvalidHeader>
@@ -95,8 +93,7 @@ where
 impl<'context, ERROR, CTX, VAL, PREEXEC, EXEC, POSTEXEC> EvmExec
     for Evm<'context, ERROR, CTX, EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>>
 where
-    CTX: 'context
-        + TransactionSetter
+    CTX: TransactionSetter
         + BlockSetter
         + JournalGetter
         + CfgGetter
@@ -107,8 +104,7 @@ where
                 FinalOutput = (EvmState, Vec<Log>),
                 Database = <CTX as DatabaseGetter>::Database,
             >,
-        >
-        + Host
+        > + Host
         + PerformantContextAccess<Error = <<CTX as DatabaseGetter>::Database as Database>::Error>,
     ERROR: From<InvalidTransaction>
         + From<InvalidHeader>
@@ -158,8 +154,7 @@ pub type MainEvm<'context, DB, BLOCK, TX, CFG> =
 impl<'context, ERROR, CTX, VAL, PREEXEC, EXEC, POSTEXEC>
     Evm<'context, ERROR, CTX, EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>>
 where
-    CTX: 'context
-        + TransactionGetter
+    CTX: TransactionGetter
         + BlockGetter
         + JournalGetter
         + CfgGetter
@@ -170,8 +165,7 @@ where
                 FinalOutput = (EvmState, Vec<Log>),
                 Database = <CTX as DatabaseGetter>::Database,
             >,
-        >
-        + Host
+        > + Host
         + PerformantContextAccess<Error = <<CTX as DatabaseGetter>::Database as Database>::Error>,
     ERROR: From<InvalidTransaction>
         + From<InvalidHeader>

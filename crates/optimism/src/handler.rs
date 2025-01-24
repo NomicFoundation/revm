@@ -192,7 +192,7 @@ pub struct OpExecution<
 impl<'context, CTX, ERROR, FRAME> ExecutionHandler<'context>
     for OpExecution<'context, CTX, ERROR, FRAME>
 where
-    CTX: 'context + EthExecutionContext<ERROR> + EthFrameContext + OpTxGetter,
+    CTX: EthExecutionContext<ERROR> + EthFrameContext + OpTxGetter,
     ERROR: EthExecutionError<CTX> + EthFrameError<CTX>,
     <CTX as CfgGetter>::Cfg: Cfg<Spec = OpSpec>,
     //<CTX as TransactionGetter>::Transaction: Transaction<TransactionType = OpTransactionType>,

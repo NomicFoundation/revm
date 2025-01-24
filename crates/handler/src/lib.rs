@@ -67,8 +67,8 @@ pub struct EthHandler<
     _phantom: core::marker::PhantomData<fn() -> &'context (CTX, ERROR)>,
 }
 
-impl<'context, CTX: 'context, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
-    EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
+impl<CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
+    EthHandler<'_, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
 {
     pub fn new(
         validation: VAL,
@@ -89,8 +89,7 @@ impl<'context, CTX: 'context, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
 impl<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC> Handler<'context>
     for EthHandler<'context, CTX, ERROR, VAL, PREEXEC, EXEC, POSTEXEC>
 where
-    CTX: 'context
-        + TransactionGetter
+    CTX: TransactionGetter
         + BlockGetter
         + JournalGetter
         + CfgGetter
