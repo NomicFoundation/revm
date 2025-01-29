@@ -90,6 +90,30 @@ impl CfgEnv {
     }
 }
 
+impl<SPEC: Into<SpecId>> CfgEnv<SPEC> {
+    pub fn with_spec(spec: SPEC) -> Self {
+        Self {
+            chain_id: 1,
+            limit_contract_code_size: None,
+            spec,
+            disable_nonce_check: false,
+            blob_target_and_max_count: vec![(SpecId::CANCUN, 3, 6), (SpecId::PRAGUE, 6, 9)],
+            #[cfg(feature = "memory_limit")]
+            memory_limit: (1 << 32) - 1,
+            #[cfg(feature = "optional_balance_check")]
+            disable_balance_check: false,
+            #[cfg(feature = "optional_block_gas_limit")]
+            disable_block_gas_limit: false,
+            #[cfg(feature = "optional_eip3607")]
+            disable_eip3607: false,
+            #[cfg(feature = "optional_gas_refund")]
+            disable_gas_refund: false,
+            #[cfg(feature = "optional_no_base_fee")]
+            disable_base_fee: false,
+        }
+    }
+}
+
 impl<SPEC: Into<SpecId> + Copy> Cfg for CfgEnv<SPEC> {
     type Spec = SPEC;
 
@@ -176,25 +200,7 @@ impl<SPEC: Into<SpecId> + Copy> Cfg for CfgEnv<SPEC> {
 
 impl<SPEC: Default + Into<SpecId>> Default for CfgEnv<SPEC> {
     fn default() -> Self {
-        Self {
-            chain_id: 1,
-            limit_contract_code_size: None,
-            spec: SPEC::default(),
-            disable_nonce_check: false,
-            blob_target_and_max_count: vec![(SpecId::CANCUN, 3, 6), (SpecId::PRAGUE, 6, 9)],
-            #[cfg(feature = "memory_limit")]
-            memory_limit: (1 << 32) - 1,
-            #[cfg(feature = "optional_balance_check")]
-            disable_balance_check: false,
-            #[cfg(feature = "optional_block_gas_limit")]
-            disable_block_gas_limit: false,
-            #[cfg(feature = "optional_eip3607")]
-            disable_eip3607: false,
-            #[cfg(feature = "optional_gas_refund")]
-            disable_gas_refund: false,
-            #[cfg(feature = "optional_no_base_fee")]
-            disable_base_fee: false,
-        }
+        Self::with_spec(SPEC::default())
     }
 }
 
