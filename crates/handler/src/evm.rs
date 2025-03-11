@@ -13,6 +13,7 @@ use interpreter::{
     interpreter::EthInterpreter, Interpreter, InterpreterAction, InterpreterResult,
     InterpreterTypes,
 };
+use precompile::PrecompileError;
 
 /// Main trait that combines the context, instructions and precompiles and allows execution of interpreter.
 #[auto_impl(&mut, Box)]

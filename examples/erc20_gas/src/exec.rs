@@ -15,7 +15,10 @@ use revm::{
 
 pub fn transact_erc20evm<EVM>(
     evm: &mut EVM,
-) -> Result<ResultAndState<HaltReason>, EVMError<ContextTrDbError<EVM::Context>, InvalidTransaction>>
+) -> Result<
+    ResultAndState<HaltReason>,
+    EVMError<ContextTrDbError<EVM::Context>, PrecompileError, InvalidTransaction>,
+>
 where
     EVM: EvmTr<
         Context: ContextTr<Journal: JournalTr<FinalOutput = JournalOutput>>,
@@ -31,7 +34,10 @@ where
 
 pub fn transact_erc20evm_commit<EVM>(
     evm: &mut EVM,
-) -> Result<ExecutionResult<HaltReason>, EVMError<ContextTrDbError<EVM::Context>, InvalidTransaction>>
+) -> Result<
+    ExecutionResult<HaltReason>,
+    EVMError<ContextTrDbError<EVM::Context>, PrecompileError, InvalidTransaction>,
+>
 where
     EVM: EvmTr<
         Context: ContextTr<Journal: JournalTr<FinalOutput = JournalOutput>, Db: DatabaseCommit>,
