@@ -12,3 +12,14 @@ impl From<HaltReason> for OpHaltReason {
         Self::Base(value)
     }
 }
+
+impl TryFrom<OpHaltReason> for HaltReason {
+    type Error = OpHaltReason;
+
+    fn try_from(value: OpHaltReason) -> Result<HaltReason, OpHaltReason> {
+        match value {
+            OpHaltReason::Base(reason) => Ok(reason),
+            OpHaltReason::FailedDeposit => Err(value),
+        }
+    }
+}
