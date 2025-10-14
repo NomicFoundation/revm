@@ -1,19 +1,29 @@
 //! Integration tests for the `op-revm` crate.
 mod common;
 
+use std::convert::Infallible;
+
 use common::compare_or_save_testdata;
-use context::ContextTr;
-use database::BENCH_CALLER;
-use primitives::{address, b256, hardfork::SpecId, Bytes, TxKind, KECCAK_EMPTY};
+use context::{
+    either::Either,
+    result::ExecutionResult,
+    transaction::{Authorization, RecoveredAuthority, RecoveredAuthorization},
+    ContextTr, TransactionType,
+};
+use database::{CacheDB, BENCH_CALLER, BENCH_CALLER_BALANCE, BENCH_TARGET_BALANCE};
+use primitives::{
+    address, b256, hardfork::SpecId, Address, Bytes, StorageKey, StorageValue, TxKind, B256,
+    KECCAK_EMPTY,
+};
 use revm::{
     bytecode::opcode,
     context::TxEnv,
     database::{BenchmarkDB, BENCH_TARGET},
     primitives::U256,
     state::Bytecode,
-    Context, ExecuteEvm, MainBuilder, MainContext,
+    Context, DatabaseRef, ExecuteEvm, MainBuilder, MainContext,
 };
-use state::AccountStatus;
+use state::{AccountInfo, AccountStatus};
 
 const SELFDESTRUCT_BYTECODE: &[u8] = &[
     opcode::PUSH2,
@@ -271,4 +281,89 @@ fn test_disable_balance_check() {
     let returned_balance = U256::from_be_slice(result.output().unwrap().as_ref());
     let expected_balance = U256::ZERO;
     assert_eq!(returned_balance, expected_balance);
+}
+
+#[test]
+fn test_eip7702_refund() {
+    /// A database type that mocks a remote provider. When returning JSON-RPC requests for account
+    /// info, it will return an empty account information for accounts that don't exist.
+    struct MockRemoteDB;
+
+    impl DatabaseRef for MockRemoteDB {
+        type Error = Infallible;
+
+        fn basic_ref(&self, _address: Address) -> Result<Option<AccountInfo>, Self::Error> {
+            Ok(Some(AccountInfo::default()))
+        }
+
+        fn code_by_hash_ref(&self, _code_hash: B256) -> Result<Bytecode, Self::Error> {
+            Ok(Bytecode::new())
+        }
+
+        fn storage_ref(
+            &self,
+            _address: Address,
+            _index: StorageKey,
+        ) -> Result<StorageValue, Self::Error> {
+            Ok(StorageValue::default())
+        }
+
+        fn block_hash_ref(&self, _number: u64) -> Result<B256, Self::Error> {
+            Ok(B256::default())
+        }
+    }
+
+    let mut database = CacheDB::new(MockRemoteDB);
+    database.insert_account_info(
+        BENCH_TARGET,
+        AccountInfo {
+            balance: BENCH_TARGET_BALANCE,
+            nonce: 0,
+            code: None,
+            code_hash: KECCAK_EMPTY,
+        },
+    );
+    database.insert_account_info(
+        BENCH_CALLER,
+        AccountInfo {
+            balance: BENCH_CALLER_BALANCE,
+            nonce: 0,
+            code_hash: KECCAK_EMPTY,
+            code: None,
+        },
+    );
+
+    let mut evm = Context::mainnet()
+        .modify_cfg_chained(|cfg| {
+            cfg.spec = SpecId::PRAGUE;
+        })
+        .with_db(database)
+        .build_mainnet();
+
+    const AUTHORITY: Address = address!("0xdddddddddddddddddddddddddddddddddddddddd");
+    let result = evm
+        .transact_one(
+            TxEnv::builder_for_bench()
+                .tx_type(Some(TransactionType::Eip7702.into()))
+                .authorization_list(vec![Either::Right(RecoveredAuthorization::new_unchecked(
+                    Authorization {
+                        chain_id: U256::from(1),
+                        address: AUTHORITY,
+                        nonce: 0,
+                    },
+                    RecoveredAuthority::Valid(AUTHORITY),
+                ))])
+                .build_fill(),
+        )
+        .expect("tx failed");
+
+    if let ExecutionResult::Success { gas_refunded, .. } = result {
+        assert!(
+            gas_refunded == 0,
+            "expected 0 gas refunded, got {}",
+            gas_refunded
+        );
+    } else {
+        panic!("tx failed: {:?}", result);
+    }
 }
